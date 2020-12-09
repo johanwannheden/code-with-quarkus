@@ -1,4 +1,4 @@
-# code-with-quarkus project
+# Timelog
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
