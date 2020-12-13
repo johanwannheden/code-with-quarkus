@@ -4,9 +4,9 @@ name: Quarkus Codestart CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -18,4 +18,4 @@ jobs:
         with:
           java-version: 11
       - name: Build
-          run: ./mvnw verify -B
+        run: ./mvnw verify -B
