@@ -8,6 +8,7 @@ import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,14 +24,15 @@ public class TimelogResource {
 
     @Operation(
             summary = "Add entry",
-            description = "Persist a Timelog record"
+            description = "Persist a Timelog record and returns it"
     )
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("create")
-    public void createLogEntry(@RequestBody Timelog entry) {
+    public Response createLogEntry(@RequestBody Timelog entry) {
         LOGGER.info("Adding entry " + entry);
-        service.persistEntry(entry);
+        return Response.accepted(service.persistEntry(entry)).build();
     }
 
     @Operation(
@@ -51,8 +53,18 @@ public class TimelogResource {
     )
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
-    @Path("update")
-    public void updateLogEntry(@RequestBody Timelog entry) {
-        service.updateEntry(entry);
+    @Path("update/{id}")
+    public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody Timelog entry) {
+        service.updateEntry(Long.parseLong(id), entry);
+    }
+
+    @Operation(
+            summary = "Delete entry",
+            description = "Deletes a Timelog record"
+    )
+    @DELETE
+    @Path("delete/{id}")
+    public void deleteLogEntry(@PathParam("id") @NotNull String id) {
+        service.deleteEntry(Long.parseLong(id));
     }
 }
