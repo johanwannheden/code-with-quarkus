@@ -1,6 +1,6 @@
-package org.example.timelog.service;
+package org.example.timelog.logging.service;
 
-import org.example.timelog.model.Timelog;
+import org.example.timelog.logging.model.Timelog;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

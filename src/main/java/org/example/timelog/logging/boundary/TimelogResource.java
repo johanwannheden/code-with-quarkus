@@ -1,9 +1,9 @@
-package org.example.timelog;
+package org.example.timelog.logging.boundary;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.example.timelog.model.Timelog;
-import org.example.timelog.service.TimelogService;
+import org.example.timelog.logging.model.Timelog;
+import org.example.timelog.logging.service.TimelogService;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;

@@ -1,4 +1,4 @@
-package org.example.timelog.model;
+package org.example.timelog.logging.model;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
