@@ -10,6 +10,7 @@ import org.example.timelog.reporting.model.UserEntity;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.HEAD;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -113,17 +114,15 @@ public class MonthlyBalanceGenerator {
     }
 
     PdfPTable createLogTable(MonthlySalaryReport salaryReport) throws DocumentException {
-        PdfPTable table = new PdfPTable(3);
-        int[] relativeWidths = IntStream.of(2, 1, 1).toArray();
-        table.setWidths(relativeWidths);
-
-        createHeaderCells("Arbeitsstunden", "Datum", "Stunden").forEach(table::addCell);
+        PdfPTable table = new PdfPTable(4);
+        createHeaderCells("Arbeitsstunden", "", "Datum", "Stunden").forEach(table::addCell);
         salaryReport.getHoursWorkedByDay().entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(e -> createCell(
                         "",// 1
-                        formattedToPrecision2(e.getValue()),//2
-                        e.getKey().toString()//3
+                        "",// 2
+                        e.getKey().toString(),//3
+                        formattedToPrecision2(e.getValue())//4
                 ).forEach(table::addCell));
 
         return table;
