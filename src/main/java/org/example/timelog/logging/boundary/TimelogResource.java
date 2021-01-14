@@ -2,7 +2,7 @@ package org.example.timelog.logging.boundary;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.example.timelog.logging.model.Timelog;
+import org.example.timelog.logging.model.TimelogEntity;
 import org.example.timelog.logging.service.TimelogService;
 import org.jboss.logging.Logger;
 
@@ -30,7 +30,7 @@ public class TimelogResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("create")
-    public Response createLogEntry(@RequestBody Timelog entry) {
+    public Response createLogEntry(@RequestBody TimelogEntity entry) {
         LOGGER.info("Adding entry " + entry);
         return Response.accepted(service.persistEntry(entry)).build();
     }
@@ -54,7 +54,7 @@ public class TimelogResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @Path("update/{id}")
-    public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody Timelog entry) {
+    public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
         service.updateEntry(Long.parseLong(id), entry);
     }
 

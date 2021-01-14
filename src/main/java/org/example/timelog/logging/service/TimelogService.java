@@ -1,13 +1,15 @@
 package org.example.timelog.logging.service;
 
-import org.example.timelog.logging.model.Timelog;
+import org.example.timelog.logging.model.TimelogEntity;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,8 +19,8 @@ public class TimelogService {
     EntityManager em;
 
     @Transactional
-    public Timelog persistEntry(@Valid Timelog entry) {
-        var query = em.createQuery("select count(t) from Timelog t where t.date = :date");
+    public TimelogEntity persistEntry(@Valid TimelogEntity entry) {
+        var query = em.createQuery("select count(t) from TimelogEntity t where t.date = :date");
         query.setParameter("date", entry.getDate());
         var count = (long) query.getSingleResult();
         if (count > 0) {
@@ -27,14 +29,26 @@ public class TimelogService {
         return em.merge(entry);
     }
 
-    public List<Timelog> getAllEntries() {
-        return em.createQuery("select t from Timelog t", Timelog.class).getResultList();
+    public List<TimelogEntity> getAllEntries() {
+        return em.createQuery("select t from TimelogEntity t", TimelogEntity.class).getResultList();
+    }
+
+    public List<TimelogEntity> getEntriesForTimespan(LocalDate dateFrom, LocalDate dateUntil) {
+        var query = em.createQuery("" +
+                        "select t " +
+                        "from TimelogEntity t " +
+                        "where t.date >= :dateFrom " +
+                        "  and t.date <= :dateUntil"
+                , TimelogEntity.class);
+        query.setParameter("dateFrom", dateFrom);
+        query.setParameter("dateUntil", dateUntil);
+        return query.getResultList();
     }
 
     @Transactional
-    public void updateEntry(long id, @Valid Timelog entry) {
+    public void updateEntry(long id, @Valid TimelogEntity entry) {
         var query = em.createQuery("" +
-                "update Timelog " +
+                "update TimelogEntity " +
                 "  set startTime = :startTime," +
                 "      endTime = :endTime," +
                 "      date = :date," +
@@ -58,7 +72,7 @@ public class TimelogService {
 
     @Transactional
     public void deleteEntry(long id) {
-        Query query = em.createQuery("delete from Timelog t where t.id = :id");
+        Query query = em.createQuery("delete from TimelogEntity t where t.id = :id");
         query.setParameter("id", id);
         var result = query.executeUpdate();
         if (result != 1) {

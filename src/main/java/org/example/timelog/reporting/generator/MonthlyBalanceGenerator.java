@@ -4,71 +4,67 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.example.timelog.reporting.finance.MonthlySalaryReport;
+import org.example.timelog.reporting.model.GenerationContext;
+import org.example.timelog.reporting.model.UserEntity;
 import org.jboss.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.example.timelog.reporting.util.FinancialConstants.*;
 
 @ApplicationScoped
 public class MonthlyBalanceGenerator {
 
     private static final Logger LOGGER = Logger.getLogger(MonthlyBalanceGenerator.class);
+
+    private static final BaseColor TABLE_CELL_BACKGROUND_COLOR = new BaseColor(240, 240, 240);
+
+    private static final Font CELL_CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA, 6);
+    private static final Font CELL_CONTENT_ITALIC_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLDOBLIQUE, 6, Font.FontStyle.UNDERLINE.ordinal());
+    private static final Font CELL_CONTENT_BOLD__FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 6);
+    private static final Font CELL_HEADER_CONTENT_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8);
+    private static final Font DOCUMENT_TITLE_FONT = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+
     private final Locale locale = new Locale.Builder().setLanguage("de").setRegion("CH").build();
 
-    public InputStream generateMonthlyReport(int year, int month) {
+    public InputStream generateMonthlyReport(GenerationContext context, MonthlySalaryReport monthlySalaryReport) {
+
         try {
             Document document = new Document(PageSize.A4, 20, 20, 20, 20);
 
-            Chunk chunk = new Chunk("Lohnabrechnung: " + Month.of(month).getDisplayName(TextStyle.FULL, locale),
-                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12));
-            Paragraph paragraph = new Paragraph(chunk);
-            paragraph.add(Chunk.NEWLINE);
-            paragraph.add(Chunk.NEWLINE);
-            paragraph.add(Chunk.NEWLINE);
-
-            PdfPTable table = new PdfPTable(4);
-            int[] relativeWidths = IntStream.of(1, 1, 1, 1).toArray();
-            table.setWidths(relativeWidths);
-            table.setHeaderRows(1);
-
-            /*
-             * Categories: Header
-             */
-            PdfPCell categoryCell = new PdfPCell(new Phrase("Category"));
-            categoryCell.setBackgroundColor(new BaseColor(0, 173, 239));
-            table.addCell(categoryCell);
-
-            PdfPCell countOfCell = new PdfPCell(new Phrase("Count"));
-            countOfCell.setBackgroundColor(new BaseColor(0, 173, 239));
-            table.addCell(countOfCell);
-
-            PdfPCell rateCell = new PdfPCell(new Phrase("Rate"));
-            rateCell.setBackgroundColor(new BaseColor(0, 173, 239));
-            table.addCell(rateCell);
-
-            PdfPCell amountCell = new PdfPCell(new Phrase("Amount"));
-            amountCell.setBackgroundColor(new BaseColor(0, 173, 239));
-            table.addCell(amountCell);
-
-            /*
-             * Categories: Data
-             */
-            createCellWithPhrase("Stundenlohn", "100.51", "21.20", "2133.69").forEach(table::addCell);
-            createCellWithPhrase("Ferienvergütung", "", "8.333%", "177.80").forEach(table::addCell);
+            var paragraph = createTitleParagraph(context.getMonth(), context.getYear());
+            var generatedAtParagraph = createGeneratedAtParagraph();
+            var employerAndEmployeeTable = createEmployerAndEmployeeTable(context.getEmployee(), context.getEmployer());
+            var wageTable = createWorkSummaryTable(monthlySalaryReport);
+            var logTable = createLogTable(monthlySalaryReport);
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             PdfWriter.getInstance(document, os);
             document.open();
+            document.add(generatedAtParagraph);
             document.add(paragraph);
-            document.add(table);
+            document.add(Chunk.NEWLINE);
+            document.add(employerAndEmployeeTable);
+            document.add(Chunk.NEWLINE);
+            document.add(wageTable);
+            document.add(Chunk.NEWLINE);
+            document.add(logTable);
             document.close();
 
             return new ByteArrayInputStream(os.toByteArray());
@@ -78,14 +74,132 @@ public class MonthlyBalanceGenerator {
         }
     }
 
-    private Stream<PdfPCell> createCellWithPhrase(String... value) {
-        return Stream.of(value).map(this::createSingleCellWithPhrase);
+    Paragraph createGeneratedAtParagraph() {
+        var generatedAtComment = String.format("Generated at %s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+        var generatedAtParagraph = new Paragraph(new Chunk(generatedAtComment, FontFactory.getFont(FontFactory.HELVETICA, 6)));
+        generatedAtParagraph.setAlignment(Element.ALIGN_RIGHT);
+        return generatedAtParagraph;
     }
 
-    private PdfPCell createSingleCellWithPhrase(String value) {
-        var phrase = new Phrase(value);
-        var cell = new PdfPCell();
-        cell.addElement(phrase);
+    Paragraph createTitleParagraph(int month, int year) {
+        var documentTitle = String.format("Lohnabrechnung: %s %d", Month.of(month).getDisplayName(TextStyle.FULL, locale), year);
+        var chunk = new Chunk(documentTitle, DOCUMENT_TITLE_FONT);
+        return new Paragraph(chunk);
+    }
+
+    PdfPTable createEmployerAndEmployeeTable(UserEntity employee, UserEntity employer) throws DocumentException {
+        PdfPTable table = new PdfPTable(3);
+        int[] relativeWidths = IntStream.of(1, 2, 1).toArray();
+        table.setWidths(relativeWidths);
+
+        createBoldCell("Arbeitnehmer", "", "Arbeitgeber").forEach(table::addCell);
+        createCell(
+                String.format("%s %s", employee.getFirstName(), employee.getLastName()),//
+                "",//
+                String.format("%s %s", employer.getFirstName(), employer.getLastName()))//
+                .forEach(table::addCell);
+        createCell(
+                String.format("%s %s", employee.getStreet(), employee.getStreetNumber()),//
+                "",//
+                String.format("%s %s", employer.getStreet(), employer.getStreetNumber()))//
+                .forEach(table::addCell);
+        createCell(
+                String.format("%s %s", employee.getZip(), employee.getCity()),//
+                "",//
+                String.format("%s %s", employer.getZip(), employer.getCity()))//
+                .forEach(table::addCell);
+
+        return table;
+    }
+
+    PdfPTable createLogTable(MonthlySalaryReport salaryReport) throws DocumentException {
+        PdfPTable table = new PdfPTable(3);
+        int[] relativeWidths = IntStream.of(2, 1, 1).toArray();
+        table.setWidths(relativeWidths);
+
+        createHeaderCells("Arbeitsstunden", "Datum", "Stunden").forEach(table::addCell);
+        salaryReport.getHoursWorkedByDay().entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> createCell(
+                        "",// 1
+                        formattedToPrecision2(e.getValue()),//2
+                        e.getKey().toString()//3
+                ).forEach(table::addCell));
+
+        return table;
+    }
+
+    PdfPTable createWorkSummaryTable(MonthlySalaryReport salaryReport) throws DocumentException {
+        PdfPTable table = new PdfPTable(4);
+        int[] relativeWidths = IntStream.of(1, 1, 1, 1).toArray();
+        table.setWidths(relativeWidths);
+
+        createHeaderCells("Kategorien", "Anzahl", "Rate", "Betrag").forEach(table::addCell);
+        createCell(
+                "Stundenlohn",
+                formattedToPrecision2(salaryReport.getNumberOfHoursWorked()),
+                formattedToPrecision2(salaryReport.getHourlyWageExcludingHolidayExpense()),
+                formattedToPrecision2(salaryReport.getWageForHoursWorked())
+        ).forEach(table::addCell);
+        createCell(
+                "Ferienvergütung",
+                "",
+                getPercentageLabel(HOLIDAY_EXPENSE),
+                formattedToPrecision2(salaryReport.getAmountHolidayExpense())
+        ).forEach(table::addCell);
+        createCell(" ", " ", " ", " ").forEach(table::addCell);
+
+        createHeaderCells("Bruttolohn", "", "", formattedToPrecision2(salaryReport.getGrossSalary())).forEach(table::addCell);
+        createCell("AHV/IV/EO", "", getPercentageLabel(AHV_IV_EO), formattedToPrecision2(salaryReport.getAmountAhvIvEo())).forEach(table::addCell);
+        createCell("Arbeitslosenversicherung (ALV)", "", getPercentageLabel(ALV), formattedToPrecision2(salaryReport.getAmountAlv())).forEach(table::addCell);
+        createCell("Nicht-Berufsunfallversicherung (NBU)", "", getPercentageLabel(NBU), formattedToPrecision2(salaryReport.getAmountNbu())).forEach(table::addCell);
+        createCell(CELL_CONTENT_ITALIC_FONT, "Total Sozialversicherungsabzüge", "", "", formattedToPrecision2(salaryReport.getTotalSocialReductions())).forEach(table::addCell);
+        createCell("Quellensteuer", "", getPercentageLabel(QUELLENSTEUER), formattedToPrecision2(salaryReport.getAmountQuellensteuer())).forEach(table::addCell);
+        createCell(" ", " ", " ", " ").forEach(table::addCell);
+
+        createHeaderCells("Abzüge", "", "", formattedToPrecision2(salaryReport.getTotalReductions())).forEach(table::addCell);
+        createCell(" ", " ", " ", " ").forEach(table::addCell);
+
+        createHeaderCells("Nettolohn", "", "", formattedToPrecision2(salaryReport.getNetSalary())).forEach(table::addCell);
+        createCell(" ", " ", " ", " ").forEach(table::addCell);
+
+        return table;
+    }
+
+    Stream<PdfPCell> createHeaderCells(String... values) {
+        return Arrays.stream(values).map(this::createHeaderCell);
+    }
+
+    PdfPCell createHeaderCell(String value) {
+        var phrase = new Phrase(value, CELL_HEADER_CONTENT_FONT);
+        PdfPCell cell = new PdfPCell(phrase);
+        cell.setBorder(PdfPCell.BOTTOM);
+        cell.setBackgroundColor(TABLE_CELL_BACKGROUND_COLOR);
         return cell;
     }
+
+    Stream<PdfPCell> createCell(String... value) {
+        return Stream.of(value).map(it -> createSingleCell(it, CELL_CONTENT_FONT));
+    }
+
+    Stream<PdfPCell> createCell(Font font, String... value) {
+        return Stream.of(value).map(it -> createSingleCell(it, font));
+    }
+
+    Stream<PdfPCell> createBoldCell(String... value) {
+        return Stream.of(value).map(it -> createSingleCell(it, CELL_CONTENT_BOLD__FONT));
+    }
+
+    PdfPCell createSingleCell(String value, Font font) {
+        var phrase = new Phrase(value, font);
+        PdfPCell cell = new PdfPCell(phrase);
+        cell.setBorder(PdfPCell.NO_BORDER);
+        return cell;
+    }
+
+    String formattedToPrecision2(double value) {
+        var df = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(locale));
+        return df.format(value);
+    }
+
 }
