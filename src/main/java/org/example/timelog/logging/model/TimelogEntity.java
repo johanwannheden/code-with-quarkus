@@ -22,6 +22,11 @@ public class TimelogEntity {
     @GeneratedValue(generator = "timelogSeq")
     private Long id;
 
+    @Schema(name = "userId", example = "5d10a7cf-9b34-4990-bd39-0a7b9196aecb")
+    @NotNull
+    @Column(name = "user_id")
+    private String userId;
+
     @Schema(hidden = true)
     @Version
     private short version;
@@ -66,6 +71,14 @@ public class TimelogEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public short getVersion() {

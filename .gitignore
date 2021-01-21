@@ -35,3 +35,6 @@ nb-configuration.xml
 # patch
 *.orig
 *.rej
+
+# Other
+/src/main/resources/import-prod.sql
