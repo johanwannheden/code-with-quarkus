@@ -3,10 +3,8 @@ package org.example.timelog.logging.model;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -50,15 +48,11 @@ public class TimelogEntity {
 
     @Schema(name = "startTime", pattern = "\\d{2}:\\d{2}", example = "08:30")
     @NotNull
-    @NotBlank
-    @Pattern(regexp = "\\d{2}:\\d{2}")
     @Column(name = "start_time")
     private LocalTime startTime;
 
     @Schema(name = "endTime", pattern = "\\d{2}:\\d{2}", example = "17:15")
     @NotNull
-    @NotBlank
-    @Pattern(regexp = "\\d{2}:\\d{2}")
     @Column(name = "end_time")
     private LocalTime endTime;
 
