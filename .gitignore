@@ -37,4 +37,4 @@ nb-configuration.xml
 *.rej
 
 # Other
-/src/main/resources/import-prod.sql
+/src/main/resources/import-prod-*.sql

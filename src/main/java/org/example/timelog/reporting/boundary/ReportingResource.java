@@ -1,5 +1,6 @@
 package org.example.timelog.reporting.boundary;
 
+import org.example.timelog.CallContext;
 import org.example.timelog.reporting.service.ReportingService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,17 +17,19 @@ import javax.ws.rs.core.StreamingOutput;
 public class ReportingResource {
 
     private final ReportingService reportingService;
+    private final CallContext callContext;
 
     @Inject
-    ReportingResource(ReportingService reportingService){
+    ReportingResource(ReportingService reportingService, CallContext callContext){
         this.reportingService = reportingService;
+        this.callContext = callContext;
     }
 
     @GET
-    @Path("generate/{year}/{month}/{userId}")
+    @Path("generate/{year}/{month}")
     @Produces("application/pdf")
-    public Response generate(@PathParam("year") int year, @PathParam("month") int month, @PathParam("userId") String userId) {
-        var report = reportingService.generateMonthlyReport(year, month, userId);
+    public Response generate(@PathParam("year") int year, @PathParam("month") int month) {
+        var report = reportingService.generateMonthlyReport(year, month, callContext.getCurrentUserId());
         var reportFileName = String.format("timelog-%d-%d.pdf", year, month);
         return Response
                 .ok((StreamingOutput) output -> output.write(report.readAllBytes()))

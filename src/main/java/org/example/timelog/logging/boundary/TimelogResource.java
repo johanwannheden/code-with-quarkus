@@ -42,7 +42,7 @@ public class TimelogResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("all")
-    public Response getLogEntires() {
+    public Response getLogEntries() {
         var allEntries = service.getAllEntries();
         return Response.ok(allEntries).build();
     }
@@ -52,6 +52,7 @@ public class TimelogResource {
             description = "Updates a Timelog record"
     )
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("update/{id}")
     public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
@@ -64,6 +65,7 @@ public class TimelogResource {
     )
     @DELETE
     @Path("delete/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public void deleteLogEntry(@PathParam("id") @NotNull String id) {
         service.deleteEntry(Long.parseLong(id));
     }

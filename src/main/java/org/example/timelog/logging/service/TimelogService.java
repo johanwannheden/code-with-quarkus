@@ -1,12 +1,12 @@
 package org.example.timelog.logging.service;
 
+import org.example.timelog.CallContext;
 import org.example.timelog.logging.model.TimelogEntity;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -17,6 +17,9 @@ import java.util.List;
 public class TimelogService {
     @Inject
     EntityManager em;
+
+    @Inject
+    CallContext callContext;
 
     @Transactional
     public TimelogEntity persistEntry(@Valid TimelogEntity entry) {
@@ -30,7 +33,13 @@ public class TimelogService {
     }
 
     public List<TimelogEntity> getAllEntries() {
-        return em.createQuery("select t from TimelogEntity t", TimelogEntity.class).getResultList();
+        String currentUserId = callContext.getCurrentUserId();
+        if (currentUserId == null) {
+            throw new IllegalStateException("No current user");
+        }
+        var query = em.createQuery("select t from TimelogEntity t where t.userId = :userId", TimelogEntity.class);
+        query.setParameter("userId", currentUserId);
+        return query.getResultList();
     }
 
     public List<TimelogEntity> getEntriesForTimespan(LocalDate dateFrom, LocalDate dateUntil) {
