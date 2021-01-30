@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 
 @ApplicationScoped
 @Path("timelog")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class TimelogResource {
 
     private static final Logger LOGGER = Logger.getLogger(TimelogResource.class);
@@ -27,8 +29,6 @@ public class TimelogResource {
             description = "Persist a Timelog record and returns it"
     )
     @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("create")
     public Response createLogEntry(@RequestBody TimelogEntity entry) {
         LOGGER.info("Adding entry " + entry);
@@ -40,7 +40,6 @@ public class TimelogResource {
             description = "Reads all Timelog record"
     )
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("all")
     public Response getLogEntries() {
         var allEntries = service.getAllEntries();
@@ -51,12 +50,10 @@ public class TimelogResource {
             summary = "Update entry",
             description = "Updates a Timelog record"
     )
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("update/{id}")
-    public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
-        service.updateEntry(Long.parseLong(id), entry);
+    public void updateLogEntry(@PathParam("id") @NotNull long id, @RequestBody TimelogEntity entry) {
+        service.updateEntry(id, entry);
     }
 
     @Operation(
@@ -65,8 +62,7 @@ public class TimelogResource {
     )
     @DELETE
     @Path("delete/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public void deleteLogEntry(@PathParam("id") @NotNull String id) {
-        service.deleteEntry(Long.parseLong(id));
+    public void deleteLogEntry(@PathParam("id") @NotNull long id) {
+        service.deleteEntry(id);
     }
 }
