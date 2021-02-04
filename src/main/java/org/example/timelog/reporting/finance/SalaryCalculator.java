@@ -1,26 +1,25 @@
 package org.example.timelog.reporting.finance;
 
 import org.example.timelog.logging.model.TimelogEntity;
+import org.example.timelog.reporting.util.FinancialConstants;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.example.timelog.reporting.util.FinancialConstants.*;
-
 public final class SalaryCalculator {
 
-    public final MonthlySalaryReport calculate(List<TimelogEntity> timelogEntries, double hourlyWage) {
+    public final MonthlySalaryReport calculate(List<TimelogEntity> timelogEntries, double hourlyWage, FinancialConstants constants) {
         double hoursWorked = getTotalNumberOfHoursWorked(timelogEntries);
 
         double grossSalary = hoursWorked * hourlyWage;
-        double hourlyWageExcludingHolidayExpense = hourlyWage - (hourlyWage * HOLIDAY_EXPENSE);
+        double hourlyWageExcludingHolidayExpense = hourlyWage - (hourlyWage * constants.getHolidayExpense());
         double wageForHoursWorked = hourlyWageExcludingHolidayExpense * hoursWorked;
-        double amountHolidayExpense = HOLIDAY_EXPENSE * grossSalary;
-        double amountAhvIvEo = grossSalary * AHV_IV_EO;
-        double amountAlv = grossSalary * ALV;
-        double amountNbu = grossSalary * NBU;
-        double amountQuellensteuer = grossSalary * QUELLENSTEUER;
+        double amountHolidayExpense = constants.getHolidayExpense() * grossSalary;
+        double amountAhvIvEo = grossSalary * constants.getAhvIvEo();
+        double amountAlv = grossSalary * constants.getAlv();
+        double amountNbu = grossSalary * constants.getNbu();
+        double amountQuellensteuer = grossSalary * constants.getQuellensteuer();
         double totalSocialReductions = amountAhvIvEo + amountAlv + amountNbu;
         double netSalary = grossSalary - totalSocialReductions - amountQuellensteuer;
         double totalReductions = totalSocialReductions + amountQuellensteuer;
