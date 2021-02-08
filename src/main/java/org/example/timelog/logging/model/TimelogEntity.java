@@ -4,14 +4,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "TIMELOG")
+@Table(name = "T_TIMELOG")
 public class TimelogEntity {
 
     @Schema(hidden = true)
@@ -31,18 +30,15 @@ public class TimelogEntity {
 
     @Schema(name = "date", example = "2020-10-23")
     @NotNull
-    @PastOrPresent
     private LocalDate date;
 
     @Schema(name = "dateAdded", example = "2020-10-23T20:01:10")
     @NotNull
-    @PastOrPresent
     @Column(name = "date_added")
     private LocalDateTime dateAdded;
 
     @Schema(name = "dateUpdated", example = "2020-10-23T20:01:10")
     @NotNull
-    @PastOrPresent
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
 

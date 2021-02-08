@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "T_USER")
 public class UserEntity {
     @Id
     @Schema(name = "id", hidden = true)
