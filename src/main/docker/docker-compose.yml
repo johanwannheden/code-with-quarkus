@@ -12,7 +12,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=timelog
-      - POSTGRES_PASSWORD=${TIMELOGDBPW:?missing value for TIMELOGDBPW}
+      - POSTGRES_PASSWORD=${TIMELOGDBPW}
       - POSTGRES_DB=timelog
     ports:
       - 5472:5432
@@ -25,9 +25,9 @@ services:
     environment:
       - QUARKUS_PROFILE=prod
       - JAVA_ENABLE_DEBUG=true
-      - TIMELOGDBPW=${TIMELOGDBPW:?missing value for TIMELOGDBPW}
+      - TIMELOGDBPW=${TIMELOGDBPW}
     ports:
-      - 9090:9090
+      - 9443:9443
   timelog-client:
     hostname: timelog-client
     image: johanwannheden/timelog:latest
