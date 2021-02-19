@@ -2,9 +2,9 @@ package org.example.timelog.reporting.service;
 
 import org.example.timelog.logging.model.TimelogEntity;
 import org.example.timelog.logging.service.TimelogService;
+import org.example.timelog.reporting.finance.MonthlySalaryReport;
 import org.example.timelog.reporting.finance.SalaryCalculator;
 import org.example.timelog.reporting.model.GenerationContext;
-import org.example.timelog.reporting.finance.MonthlySalaryReport;
 import org.example.timelog.reporting.util.FinancialConstants;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,7 +28,8 @@ public class FinancialService {
 
     public MonthlySalaryReport calculateSalary(GenerationContext context) {
         var timelogEntries = getTimelogEntries(context);
-        var hourlyWage = salaryService.getHourlyWage(context.getEmployee().getId());
+        // TODO wage does not necessarily change on the first day of a month
+        var hourlyWage = salaryService.getHourlyWage(context.getEmployee().getId(), LocalDate.of(context.getYear(), context.getMonth(), 1));
         return new SalaryCalculator().calculate(timelogEntries, hourlyWage, financialConstants);
     }
 

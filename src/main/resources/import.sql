@@ -70,5 +70,8 @@ INSERT INTO T_TIMELOG (id, user_id, comment, date, date_added, date_updated, sta
 VALUES (NEXTVAL('timelog_id_seq'), 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'Day 15', '2020-09-25',
         '2020-10-23 20:01:10.000000', '2020-10-23 20:01:10.000000', '08:50', '17:15', 0);
 
-INSERT INTO T_SALARY (user_id, hourly_wage)
-VALUES ('e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 23.0);
+INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from, valid_until)
+VALUES ('63d40520-7670-4860-a756-54e5969628c3', 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 23.0, to_date('20200801', 'YYYYMMDD'), to_date('20200831', 'YYYYMMDD'));
+
+INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from)
+VALUES ('29e4af62-292c-4e46-ab63-8785a05c8061', 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 25.0, to_date('20200901', 'YYYYMMDD'));
