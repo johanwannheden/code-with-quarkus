@@ -83,7 +83,7 @@ public class MonthlyBalanceGenerator {
     }
 
     Paragraph createGeneratedAtParagraph() {
-        var generatedAtComment = String.format("Generated at %s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+        var generatedAtComment = String.format("Generated at %s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         var generatedAtParagraph = new Paragraph(new Chunk(generatedAtComment, FontFactory.getFont(FontFactory.HELVETICA, 6)));
         generatedAtParagraph.setAlignment(Element.ALIGN_RIGHT);
         return generatedAtParagraph;
