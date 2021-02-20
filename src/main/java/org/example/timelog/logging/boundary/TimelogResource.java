@@ -52,7 +52,7 @@ public class TimelogResource {
     )
     @POST
     @Path("update/{id}")
-    public void updateLogEntry(@PathParam("id") @NotNull long id, @RequestBody TimelogEntity entry) {
+    public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
         service.updateEntry(id, entry);
     }
 
@@ -62,7 +62,7 @@ public class TimelogResource {
     )
     @DELETE
     @Path("delete/{id}")
-    public void deleteLogEntry(@PathParam("id") @NotNull long id) {
+    public void deleteLogEntry(@PathParam("id") @NotNull String id) {
         service.deleteEntry(id);
     }
 }

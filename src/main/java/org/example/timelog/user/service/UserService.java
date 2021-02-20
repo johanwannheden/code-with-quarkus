@@ -14,6 +14,6 @@ public class UserService {
         // FIXME this is temporary: there is currently one employee only
         var query = em.createQuery("select u.id from UserEntity u where u.kind = 'EMPLOYEE'");
         Object singleResult = query.getSingleResult();
-        return (String) singleResult;
+        return String.valueOf(singleResult);
     }
 }

@@ -204,7 +204,7 @@ public class MonthlyBalanceGenerator {
     }
 
     String formattedToPrecision2(double value) {
-        var df = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(locale));
+        var df = new DecimalFormat("#.00", DecimalFormatSymbols.getInstance(locale));
         return df.format(value);
     }
 

@@ -33,7 +33,7 @@ public class TimelogService {
     }
 
     public List<TimelogEntity> getAllEntries() {
-        String currentUserId = callContext.getCurrentUserId();
+        var currentUserId = callContext.getCurrentUserId();
         if (currentUserId == null) {
             throw new IllegalStateException("No current user");
         }
@@ -55,7 +55,7 @@ public class TimelogService {
     }
 
     @Transactional
-    public void updateEntry(long id, @Valid TimelogEntity entry) {
+    public void updateEntry(String id, @Valid TimelogEntity entry) {
         var query = em.createQuery("" +
                 "update TimelogEntity " +
                 "  set startTime = :startTime," +
@@ -80,7 +80,7 @@ public class TimelogService {
     }
 
     @Transactional
-    public void deleteEntry(long id) {
+    public void deleteEntry(String id) {
         Query query = em.createQuery("delete from TimelogEntity t where t.id = :id");
         query.setParameter("id", id);
         var result = query.executeUpdate();

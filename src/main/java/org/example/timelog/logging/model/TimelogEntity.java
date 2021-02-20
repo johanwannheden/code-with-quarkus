@@ -1,6 +1,7 @@
 package org.example.timelog.logging.model;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,11 +14,12 @@ import java.time.LocalTime;
 @Table(name = "T_TIMELOG")
 public class TimelogEntity {
 
-    @Schema(hidden = true)
     @Id
-    @SequenceGenerator(name = "timelogSeq", sequenceName = "timelog_id_seq", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(generator = "timelogSeq")
-    private Long id;
+    @Schema(name = "id", hidden = true)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
 
     @Schema(name = "userId", example = "5d10a7cf-9b34-4990-bd39-0a7b9196aecb")
     @NotNull
@@ -55,11 +57,11 @@ public class TimelogEntity {
     @Schema(name = "comment", example = "A looooong day")
     private String comment;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
