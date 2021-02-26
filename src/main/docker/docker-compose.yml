@@ -1,8 +1,16 @@
 version: "3.7"
 
+networks:
+  timelog-net:
+    driver: bridge
+
+volumes:
+  grafana-storage: {}
+
 services:
   timelog-db:
     hostname: timelog-db
+    container_name: timelog-db
     image: postgres:13
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "timelog" ]
@@ -16,11 +24,14 @@ services:
       - POSTGRES_DB=timelog
     ports:
       - 5472:5432
+    networks:
+      - timelog-net
     volumes:
       - /volume1/docker/timelog-db:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d/
   timelog-service:
     hostname: timelog-service
+    container_name: timelog-service
     image: johanwannheden/timelog-service:latest
     environment:
       - QUARKUS_PROFILE=prod
@@ -28,8 +39,35 @@ services:
       - TIMELOGDBPW=${TIMELOGDBPW}
     ports:
       - 9443:9443
+      - 9080:9080
+    networks:
+      - timelog-net
   timelog-client:
     hostname: timelog-client
+    container_name: timelog-client
     image: johanwannheden/timelog:latest
     ports:
       - 4200:4200
+    networks:
+      - timelog-net
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    networks:
+      - timelog-net
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    networks:
+      - timelog-net
+    volumes:
+    - grafana-storage:/var/lib/grafana
+    - ./grafana/provisioning:/etc/grafana/provisioning

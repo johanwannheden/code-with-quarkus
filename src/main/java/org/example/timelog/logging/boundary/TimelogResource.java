@@ -1,5 +1,8 @@
 package org.example.timelog.logging.boundary;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.example.timelog.logging.model.TimelogEntity;
@@ -21,8 +24,13 @@ public class TimelogResource {
 
     private static final Logger LOGGER = Logger.getLogger(TimelogResource.class);
 
-    @Inject
-    TimelogService service;
+    private final TimelogService service;
+    private final MeterRegistry registry;
+
+    TimelogResource(TimelogService service, MeterRegistry registry) {
+        this.service = service;
+        this.registry = registry;
+    }
 
     @Operation(
             summary = "Add entry",
@@ -31,6 +39,7 @@ public class TimelogResource {
     @PUT
     @Path("create")
     public Response createLogEntry(@RequestBody TimelogEntity entry) {
+        registry.counter("logentry");
         LOGGER.info("Adding entry " + entry);
         return Response.accepted(service.persistEntry(entry)).build();
     }
@@ -41,9 +50,13 @@ public class TimelogResource {
     )
     @GET
     @Path("all")
+    @Timed(value = "logentries.get-all.timed")
+    @Counted(value = "logentries.get-all.counted")
     public Response getLogEntries() {
+        registry.counter("logentry");
         var allEntries = service.getAllEntries();
-        return Response.ok(allEntries).build();
+        var response = Response.ok(allEntries).build();
+        return response;
     }
 
     @Operation(
@@ -52,6 +65,8 @@ public class TimelogResource {
     )
     @POST
     @Path("update/{id}")
+    @Timed(value = "logentries.update.timed")
+    @Counted(value = "logentries.update.counted")
     public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
         service.updateEntry(id, entry);
     }
