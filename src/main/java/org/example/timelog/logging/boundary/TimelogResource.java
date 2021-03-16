@@ -10,7 +10,6 @@ import org.example.timelog.logging.service.TimelogService;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

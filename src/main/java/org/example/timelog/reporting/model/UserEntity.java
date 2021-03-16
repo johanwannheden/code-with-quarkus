@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -55,6 +56,12 @@ public class UserEntity {
     @Schema(name = "zip", example = "54321")
     @Column(name = "zip")
     private String zip;
+
+    @NotNull
+    @Schema(name = "email", example = "donald@duck.net")
+    @Column(name = "email")
+    @Email
+    private String email;
 
     public String getId() {
         return id;
@@ -126,5 +133,13 @@ public class UserEntity {
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

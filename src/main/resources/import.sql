@@ -1,12 +1,12 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-INSERT INTO T_USER (id, city, first_name, kind, last_name, street, street_number, zip)
+INSERT INTO T_USER (id, city, first_name, kind, last_name, street, street_number, zip, email)
 VALUES ('e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Scrooge', 'EMPLOYER', 'McDuck', 'Vault Road', '1',
-        '54321');
+        '54321', 'wealthy.scrooge@duckburg.net');
 
-INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip)
+INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip, email)
 VALUES ('e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Donald',
-        'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321');
+        'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'donald.duck@duckburg.net');
 
 --
 -- Timelogs
