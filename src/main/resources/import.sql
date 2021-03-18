@@ -8,6 +8,10 @@ INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, 
 VALUES ('e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Donald',
         'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'donald.duck@duckburg.net');
 
+INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip, email)
+VALUES ('75f70398-160a-4d91-9456-cb8bf21a867d', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Johan',
+        'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'johan.wannheden@gmail.com');
+
 --
 -- Timelogs
 --

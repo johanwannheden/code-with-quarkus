@@ -38,3 +38,4 @@ nb-configuration.xml
 
 # Other
 /src/main/resources/import-prod-*.sql
+/src/main/resources/timelog-301819-firebase-adminsdk-73490-b2976466b7.json

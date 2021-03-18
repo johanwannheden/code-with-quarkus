@@ -1,14 +1,20 @@
 package org.example.timelog.user.boundary;
 
-import org.example.timelog.user.service.UserService;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.example.timelog.user.service.UserService;
+
+import com.google.firebase.auth.FirebaseAuthException;
 
 @ApplicationScoped
 @Path("user")
@@ -18,12 +24,20 @@ public class UserResource {
     UserService service;
 
     @GET
-    @Path("currentUserId")
+    @Path("verify/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response verifyEmail(@PathParam("email") String email) {
+        var userWithEmailExists = service.verifyEmailAddressExists(email);
+        return Response.ok(String.format("{\"valid\": %s}", userWithEmailExists)).build();
+    }
+
+    @POST
+    @Path("register")
     @Produces(MediaType.TEXT_PLAIN)
-    // TEST PURPOSES only, for the time being, until there is a way to distinguish
-    // multiple users
-    public Response getCurrentUserId() {
-        return Response.ok(service.getIdOfSingleEmployee()).build();
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response register(@QueryParam("token") String token, @QueryParam("email") String email) throws FirebaseAuthException {
+        String userId = service.verifyUser(token, email);
+        return Response.ok(userId).build();
     }
 
 }

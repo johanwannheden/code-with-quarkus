@@ -1,7 +1,8 @@
 package org.example.timelog.logging.service;
 
-import org.example.timelog.CallContext;
-import org.example.timelog.logging.model.TimelogEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -9,9 +10,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+
+import org.example.timelog.CallContext;
+import org.example.timelog.logging.model.TimelogEntity;
 
 @ApplicationScoped
 public class TimelogService {
@@ -37,18 +38,28 @@ public class TimelogService {
         if (currentUserId == null) {
             throw new IllegalStateException("No current user");
         }
-        var query = em.createQuery("select t from TimelogEntity t where t.userId = :userId", TimelogEntity.class);
+        var query = em.createQuery(//
+                ""//
+                + "select t "//
+                + "from TimelogEntity t "//
+                + "where t.userId = :userId"//
+                + "   or exists ("//
+                + "     select u from UserEntity u "//
+                + "     where u.id = :userId "//
+                + "       and u.kind = 'EMPLOYER'"//
+                + "   )", TimelogEntity.class);
         query.setParameter("userId", currentUserId);
         return query.getResultList();
     }
 
     public List<TimelogEntity> getEntriesForTimespan(LocalDate dateFrom, LocalDate dateUntil) {
-        var query = em.createQuery("" +
-                        "select t " +
-                        "from TimelogEntity t " +
-                        "where t.date >= :dateFrom " +
-                        "  and t.date <= :dateUntil"
-                , TimelogEntity.class);
+        var query = em.createQuery(//
+                "" //
+                + "select t " //
+                + "from TimelogEntity t " //
+                + "where t.date >= :dateFrom " //
+                + "  and t.date <= :dateUntil",//
+                TimelogEntity.class);
         query.setParameter("dateFrom", dateFrom);
         query.setParameter("dateUntil", dateUntil);
         return query.getResultList();
@@ -56,15 +67,16 @@ public class TimelogService {
 
     @Transactional
     public void updateEntry(String id, @Valid TimelogEntity entry) {
-        var query = em.createQuery("" +
-                "update TimelogEntity " +
-                "  set startTime = :startTime," +
-                "      endTime = :endTime," +
-                "      date = :date," +
-                "      comment = :comment," +
-                "      dateUpdated = :dateUpdated," +
-                "      version = version + 1" +
-                "  where id = :id");
+        var query = em.createQuery(//
+                ""//
+                + "update TimelogEntity "//
+                + "  set startTime = :startTime,"//
+                + "      endTime = :endTime,"//
+                + "      date = :date,"//
+                + "      comment = :comment,"//
+                + "      dateUpdated = :dateUpdated,"//
+                + "      version = version + 1"//
+                + "  where id = :id");
 
         query.setParameter("id", id);
         query.setParameter("date", entry.getDate());
