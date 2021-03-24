@@ -1,11 +1,14 @@
 package org.example.timelog.user.service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+
+import org.example.timelog.reporting.model.UserEntity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -18,7 +21,7 @@ public class UserService {
     @Inject
     EntityManager em;
 
-    public String verifyUser(String tokenId, String email) throws FirebaseAuthException {
+    public UserEntity verifyUser(String tokenId, String email) throws FirebaseAuthException {
         if (email == null) {
             throw new IllegalArgumentException("Email must not be null");
         }
@@ -39,10 +42,10 @@ public class UserService {
             }
         }
 
-        var query = em.createQuery("select u.id from UserEntity u where u.email = :email");
+        var query = em.createQuery("select u from UserEntity u where u.email = :email");
         query.setParameter("email", email);
         try {
-            return (String) query.getSingleResult();
+            return (UserEntity) query.getSingleResult();
         } catch (NoResultException e) {
             throw new IllegalArgumentException("Invalid email address: user unknown");
         }
@@ -57,5 +60,10 @@ public class UserService {
                                    + "where u.email = :email");
         query.setParameter("email", email);
         return Boolean.TRUE.equals(query.getSingleResult());
+    }
+
+    public UserEntity findUser(String userId) {
+        return Optional.ofNullable(em.find(UserEntity.class, userId))
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId));
     }
 }

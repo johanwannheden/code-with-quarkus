@@ -31,13 +31,21 @@ public class UserResource {
         return Response.ok(String.format("{\"valid\": %s}", userWithEmailExists)).build();
     }
 
+    @GET
+    @Path("detail/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUserDetail(@PathParam("userId") String userId) {
+        var user = service.findUser(userId);
+        return Response.ok(user).build();
+    }
+
     @POST
     @Path("register")
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response register(@QueryParam("token") String token, @QueryParam("email") String email) throws FirebaseAuthException {
-        String userId = service.verifyUser(token, email);
-        return Response.ok(userId).build();
+        var user = service.verifyUser(token, email);
+        return Response.ok(user).build();
     }
 
 }
