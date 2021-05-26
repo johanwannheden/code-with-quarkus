@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 @Path("timelog")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Timed(value = "timelog", percentiles = {0.80, 0.90, 0.95}, histogram = true)
 public class TimelogResource {
 
     private static final Logger LOGGER = Logger.getLogger(TimelogResource.class);
@@ -49,8 +50,8 @@ public class TimelogResource {
     )
     @GET
     @Path("all")
-    @Timed(value = "logentries.get-all.timed")
-    @Counted(value = "logentries.get-all.counted")
+    @Timed(value = "logentries.getall")
+    @Counted(value = "logentries.getall")
     public Response getLogEntries() {
         registry.counter("logentry");
         var allEntries = service.getAllEntries();
@@ -64,8 +65,8 @@ public class TimelogResource {
     )
     @POST
     @Path("update/{id}")
-    @Timed(value = "logentries.update.timed")
-    @Counted(value = "logentries.update.counted")
+    @Timed(value = "logentries.update")
+    @Counted(value = "logentries.update")
     public void updateLogEntry(@PathParam("id") @NotNull String id, @RequestBody TimelogEntity entry) {
         service.updateEntry(id, entry);
     }
@@ -76,6 +77,7 @@ public class TimelogResource {
     )
     @DELETE
     @Path("delete/{id}")
+    @Counted("logentries.delete")
     public void deleteLogEntry(@PathParam("id") @NotNull String id) {
         service.deleteEntry(id);
     }

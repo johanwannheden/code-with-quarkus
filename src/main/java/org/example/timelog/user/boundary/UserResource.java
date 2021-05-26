@@ -16,8 +16,12 @@ import org.example.timelog.user.service.UserService;
 
 import com.google.firebase.auth.FirebaseAuthException;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+
 @ApplicationScoped
 @Path("user")
+@Timed(value = "user")
 public class UserResource {
 
     @Inject
@@ -43,6 +47,7 @@ public class UserResource {
     @Path("register")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Counted(value = "user.register")
     public Response register(@QueryParam("token") String token, @QueryParam("email") String email) throws FirebaseAuthException {
         var user = service.verifyUser(token, email);
         return Response.ok(user).build();

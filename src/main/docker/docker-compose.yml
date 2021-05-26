@@ -33,6 +33,8 @@ services:
     hostname: timelog-service
     container_name: timelog-service
     image: johanwannheden/timelog-service:latest
+    depends_on:
+      - timelog-db
     environment:
       - QUARKUS_PROFILE=prod
       - JAVA_ENABLE_DEBUG=true
@@ -46,6 +48,8 @@ services:
     hostname: timelog-client
     container_name: timelog-client
     image: johanwannheden/timelog:latest
+    depends_on:
+      - timelog-service
     ports:
       - 4200:4200
     networks:

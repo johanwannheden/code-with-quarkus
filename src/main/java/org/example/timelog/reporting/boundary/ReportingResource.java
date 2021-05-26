@@ -12,8 +12,11 @@ import javax.ws.rs.core.StreamingOutput;
 import org.example.timelog.CallContext;
 import org.example.timelog.reporting.service.ReportingService;
 
+import io.micrometer.core.annotation.Timed;
+
 @ApplicationScoped
 @Path("reporting")
+@Timed(value = "reporting", percentiles = {0.80, 0.90, 0.95}, histogram = true)
 public class ReportingResource {
 
     private final ReportingService reportingService;
@@ -28,6 +31,7 @@ public class ReportingResource {
     @GET
     @Path("generate/{year}/{month}/{user}")
     @Produces("application/pdf")
+    @Timed(value = "generate", longTask = true)
     public Response generate(@PathParam("year") int year, @PathParam("month") int month, @PathParam("user") String user) {
         var report = reportingService.generateMonthlyReport(year, month, user);
         var reportFileName = String.format("timelog-%d-%d.pdf", year, month);
