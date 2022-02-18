@@ -52,17 +52,19 @@ public class TimelogService {
         return query.getResultList();
     }
 
-    public List<TimelogEntity> getEntriesForTimespan(LocalDate dateFrom, LocalDate dateUntil) {
-        var query = em.createQuery(//
+    public List<TimelogEntity> getEntriesForTimespan(LocalDate dateFrom, LocalDate dateUntil, String userId) {
+        return em.createQuery(//
                 "" //
                 + "select t " //
                 + "from TimelogEntity t " //
-                + "where t.date >= :dateFrom " //
+                + "where t.userId =: userId " //
+                + "  and t.date >= :dateFrom " //
                 + "  and t.date <= :dateUntil",//
-                TimelogEntity.class);
-        query.setParameter("dateFrom", dateFrom);
-        query.setParameter("dateUntil", dateUntil);
-        return query.getResultList();
+                TimelogEntity.class)
+            .setParameter("userId", userId)
+            .setParameter("dateFrom", dateFrom)
+            .setParameter("dateUntil", dateUntil)
+            .getResultList();
     }
 
     @Transactional

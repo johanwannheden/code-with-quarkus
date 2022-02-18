@@ -36,6 +36,6 @@ public class FinancialService {
     private List<TimelogEntity> getTimelogEntries(GenerationContext context) {
         var from = LocalDate.of(context.getYear(), context.getMonth(), 1);
         var until = LocalDate.of(context.getYear(), context.getMonth(), from.lengthOfMonth());
-        return timelogService.getEntriesForTimespan(from, until);
+        return timelogService.getEntriesForTimespan(from, until, context.getEmployee().getId());
     }
 }

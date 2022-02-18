@@ -11,6 +11,13 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw compile quarkus:dev
 ```
 
+## Running the application in prod mode
+
+You can run your application in dev mode that enables live coding using:
+```shell script
+./mvnw compile quarkus:dev -Dquarkus.profile=prod -Dquarkus.datasource.password=<hidden> -f pom.xml
+```
+
 ## Packaging and running the application
 
 The application can be packaged using:

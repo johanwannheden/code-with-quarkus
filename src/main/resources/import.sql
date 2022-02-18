@@ -12,6 +12,10 @@ INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, 
 VALUES ('75f70398-160a-4d91-9456-cb8bf21a867d', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Johan',
         'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'johan.wannheden@gmail.com');
 
+INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip, email)
+VALUES ('02c96bdf-e708-4602-a8d9-09fbcdf46455', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Daisy',
+        'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'daisy@duck.org');
+
 --
 -- Timelogs
 --
@@ -75,9 +79,24 @@ VALUES (uuid_generate_v1(), 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'Day 14', '2
 INSERT INTO T_TIMELOG (id, user_id, comment, date, date_added, date_updated, start_time, end_time, version)
 VALUES (uuid_generate_v1(), 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'Day 15', '2020-09-25',
         '2020-10-23 20:01:10.000000', '2020-10-23 20:01:10.000000', '08:50', '17:15', 0);
+-- 16
+INSERT INTO T_TIMELOG (id, user_id, comment, date, date_added, date_updated, start_time, end_time, version)
+VALUES (uuid_generate_v1(), 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'Day 16', '2022-02-12',
+        '2022-02-12 20:01:10.000000', '2022-02-12 20:01:10.000000', '08:50', '17:15', 0);
+-- Daisy Day 1
+INSERT INTO T_TIMELOG (id, user_id, comment, date, date_added, date_updated, start_time, end_time, version)
+VALUES (uuid_generate_v1(), '02c96bdf-e708-4602-a8d9-09fbcdf46455', 'Day 1 for Daisy', '2022-02-10',
+        '2022-02-11 20:01:10.000000', '2022-02-11 20:01:10.000000', '09:00', '13:00', 0);
+
+--------------------------
+-- SALARY
+--------------------------
 
 INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from, valid_until)
 VALUES ('63d40520-7670-4860-a756-54e5969628c3', 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 23.0, to_date('20200801', 'YYYYMMDD'), to_date('20200831', 'YYYYMMDD'));
 
 INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from)
 VALUES ('29e4af62-292c-4e46-ab63-8785a05c8061', 'e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 25.0, to_date('20200901', 'YYYYMMDD'));
+
+INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from)
+VALUES ('781740f5-d375-49fe-9489-cf2a792c1de4', '02c96bdf-e708-4602-a8d9-09fbcdf46455', 30.0, to_date('20220101', 'YYYYMMDD'));
