@@ -1,5 +1,6 @@
 package org.example.timelog.user.service;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -65,5 +66,9 @@ public class UserService {
     public UserEntity findUser(String userId) {
         return Optional.ofNullable(em.find(UserEntity.class, userId))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + userId));
+    }
+
+    public Collection<UserEntity> findAll() {
+        return em.createQuery("from UserEntity", UserEntity.class).getResultList();
     }
 }

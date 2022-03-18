@@ -9,8 +9,8 @@ VALUES ('e3a64823-324c-4aa0-8cff-436fcc9fdcb4', 'e1c7c907-9c19-4274-9636-12cc208
         'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'donald.duck@duckburg.net');
 
 INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip, email)
-VALUES ('75f70398-160a-4d91-9456-cb8bf21a867d', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Johan',
-        'EMPLOYEE', 'Duck', 'Webfoot Walk', '1313', '54321', 'johan.wannheden@gmail.com');
+VALUES ('75f70398-160a-4d91-9456-cb8bf21a867d', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Long City', 'Goofy',
+        'EMPLOYEE', 'Goof', 'Longwalk Road', '1', '3233', 'goofy.goof@mail.com');
 
 INSERT INTO T_USER (id, employer_id, city, first_name, kind, last_name, street, street_number, zip, email)
 VALUES ('02c96bdf-e708-4602-a8d9-09fbcdf46455', 'e1c7c907-9c19-4274-9636-12cc208fa294', 'Duckburg', 'Daisy',
@@ -100,3 +100,6 @@ VALUES ('29e4af62-292c-4e46-ab63-8785a05c8061', 'e3a64823-324c-4aa0-8cff-436fcc9
 
 INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from)
 VALUES ('781740f5-d375-49fe-9489-cf2a792c1de4', '02c96bdf-e708-4602-a8d9-09fbcdf46455', 30.0, to_date('20220101', 'YYYYMMDD'));
+
+INSERT INTO T_SALARY (id, user_id, hourly_wage, valid_from)
+VALUES ('a8957c4d-b830-4ef2-9cdd-8a91577afe94', '75f70398-160a-4d91-9456-cb8bf21a867d', 9.99, to_date('20000101', 'YYYYMMDD'));

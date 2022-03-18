@@ -1,23 +1,17 @@
 package org.example.timelog.user.boundary;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.example.timelog.user.service.UserService;
-
 import com.google.firebase.auth.FirebaseAuthException;
-
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
+import org.example.timelog.CallContext;
+import org.example.timelog.user.service.UserService;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.Collections;
 
 @ApplicationScoped
 @Path("user")
@@ -26,6 +20,20 @@ public class UserResource {
 
     @Inject
     UserService service;
+
+    @Inject
+    CallContext callContext;
+
+    @GET
+    @Path("all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAll() {
+        var currentUser = service.findUser(callContext.getCurrentUserId());
+        if (currentUser != null && currentUser.isAdministrator()) {
+            return Response.ok(service.findAll()).build();
+        }
+        return Response.ok(Collections.emptyList()).build();
+    }
 
     @GET
     @Path("verify/{email}")
