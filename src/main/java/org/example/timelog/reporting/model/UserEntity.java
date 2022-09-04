@@ -1,12 +1,19 @@
 package org.example.timelog.reporting.model;
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.GenericGenerator;
+import java.util.Objects;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
+
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "T_USER")
@@ -63,6 +70,14 @@ public class UserEntity {
     @Column(name = "email")
     @Email
     private String email;
+
+    @Schema(name = "quellensteuerRequired", example = "Quellensteuer true/false, or null if not applicable")
+    @Column(name = "quellensteuer_required")
+    private Boolean quellensteuerRequired;
+
+    @Schema(name = "nbuRequired", example = "Nichtberufs-Unfälle versichert true/false, or null if not applicable")
+    @Column(name = "nbu_required")
+    private Boolean nbuRequired;
 
     public String getId() {
         return id;
@@ -142,6 +157,22 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean isQuellensteuerRequired() {
+        return quellensteuerRequired;
+    }
+
+    public void setQuellensteuerRequired(Boolean quellensteuerRequired) {
+        this.quellensteuerRequired = quellensteuerRequired;
+    }
+
+    public Boolean isNbuRequired() {
+        return nbuRequired;
+    }
+
+    public void setNbuRequired(Boolean nbuRequired) {
+        this.nbuRequired = nbuRequired;
     }
 
     public boolean isAdministrator() {

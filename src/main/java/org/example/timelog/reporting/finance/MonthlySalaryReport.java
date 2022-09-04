@@ -1,11 +1,11 @@
 package org.example.timelog.reporting.finance;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Value;
-
-import java.time.LocalDate;
-import java.util.Map;
 
 @Value
 @Builder(access = AccessLevel.PUBLIC)
@@ -26,6 +26,9 @@ public class MonthlySalaryReport {
     double amountAlv;
     double amountNbu;
     double totalSocialReductions;
+
+    boolean isNbu;
+    boolean isQuellensteuer;
 
     double amountQuellensteuer;
 

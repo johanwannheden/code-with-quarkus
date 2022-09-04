@@ -1,17 +1,7 @@
 package org.example.timelog.reporting.generator;
 
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import org.example.timelog.reporting.finance.MonthlySalaryReport;
-import org.example.timelog.reporting.model.GenerationContext;
-import org.example.timelog.reporting.model.UserEntity;
-import org.example.timelog.reporting.util.FinancialConstants;
-import org.jboss.logging.Logger;
+import static org.example.timelog.reporting.util.FinancialConstants.getPercentageLabel;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -27,7 +17,28 @@ import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.example.timelog.reporting.util.FinancialConstants.getPercentageLabel;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.example.timelog.reporting.finance.MonthlySalaryReport;
+import org.example.timelog.reporting.model.GenerationContext;
+import org.example.timelog.reporting.model.UserEntity;
+import org.example.timelog.reporting.util.FinancialConstants;
+import org.jboss.logging.Logger;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 @ApplicationScoped
 public class MonthlyBalanceGenerator {
@@ -158,10 +169,14 @@ public class MonthlyBalanceGenerator {
         createHeaderCells("Bruttolohn", "", "", formattedToPrecision2(salaryReport.getGrossSalary())).forEach(table::addCell);
         createCell("AHV/IV/EO", "", getPercentageLabel(financialConstants.getAhvIvEo()), formattedToPrecision2(salaryReport.getAmountAhvIvEo())).forEach(table::addCell);
         createCell("Arbeitslosenversicherung (ALV)", "", getPercentageLabel(financialConstants.getAlv()), formattedToPrecision2(salaryReport.getAmountAlv())).forEach(table::addCell);
-        createCell("Nicht-Berufsunfallversicherung (NBU)", "", getPercentageLabel(financialConstants.getNbu()), formattedToPrecision2(salaryReport.getAmountNbu())).forEach(table::addCell);
+        if (salaryReport.isNbu()) {
+            createCell("Nicht-Berufsunfallversicherung (NBU)", "", getPercentageLabel(financialConstants.getNbu()), formattedToPrecision2(salaryReport.getAmountNbu())).forEach(table::addCell);
+        }
         createCell(CELL_CONTENT_ITALIC_FONT, "Total Sozialversicherungsabzüge", "", "", formattedToPrecision2(salaryReport.getTotalSocialReductions())).forEach(table::addCell);
-        createCell("Quellensteuer", "", getPercentageLabel(financialConstants.getQuellensteuer()), formattedToPrecision2(salaryReport.getAmountQuellensteuer())).forEach(table::addCell);
-        createCell(" ", " ", " ", " ").forEach(table::addCell);
+        if (salaryReport.isQuellensteuer()) {
+            createCell("Quellensteuer", "", getPercentageLabel(financialConstants.getQuellensteuer()), formattedToPrecision2(salaryReport.getAmountQuellensteuer())).forEach(table::addCell);
+            createCell(" ", " ", " ", " ").forEach(table::addCell);
+        }
 
         createHeaderCells("Abzüge", "", "", formattedToPrecision2(salaryReport.getTotalReductions())).forEach(table::addCell);
         createCell(" ", " ", " ", " ").forEach(table::addCell);

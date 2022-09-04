@@ -1,16 +1,17 @@
 package org.example.timelog.reporting.service;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.example.timelog.logging.model.TimelogEntity;
 import org.example.timelog.logging.service.TimelogService;
 import org.example.timelog.reporting.finance.MonthlySalaryReport;
 import org.example.timelog.reporting.finance.SalaryCalculator;
 import org.example.timelog.reporting.model.GenerationContext;
 import org.example.timelog.reporting.util.FinancialConstants;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.util.List;
 
 @ApplicationScoped
 public class FinancialService {
@@ -30,7 +31,7 @@ public class FinancialService {
         var timelogEntries = getTimelogEntries(context);
         // TODO wage does not necessarily change on the first day of a month
         var hourlyWage = salaryService.getHourlyWage(context.getEmployee().getId(), LocalDate.of(context.getYear(), context.getMonth(), 1));
-        return new SalaryCalculator().calculate(timelogEntries, hourlyWage, financialConstants);
+        return new SalaryCalculator().calculate(context.getEmployee(), timelogEntries, hourlyWage, financialConstants);
     }
 
     private List<TimelogEntity> getTimelogEntries(GenerationContext context) {

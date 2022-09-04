@@ -1,39 +1,43 @@
 package org.example.timelog.reporting.finance;
 
-import org.example.timelog.logging.model.TimelogEntity;
-import org.example.timelog.reporting.util.FinancialConstants;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.timelog.logging.model.TimelogEntity;
+import org.example.timelog.reporting.model.UserEntity;
+import org.example.timelog.reporting.util.FinancialConstants;
+
 public final class SalaryCalculator {
 
-    public final MonthlySalaryReport calculate(List<TimelogEntity> timelogEntries, double hourlyWage, FinancialConstants constants) {
+    public MonthlySalaryReport calculate(UserEntity user, List<TimelogEntity> timelogEntries, double hourlyWage,
+            FinancialConstants constants) {
         double hoursWorked = getTotalNumberOfHoursWorked(timelogEntries);
 
-        double grossSalary = hoursWorked * hourlyWage;
-        double hourlyWageExcludingHolidayExpense = hourlyWage - (hourlyWage * constants.getHolidayExpense());
-        double wageForHoursWorked = hourlyWageExcludingHolidayExpense * hoursWorked;
-        double amountHolidayExpense = constants.getHolidayExpense() * grossSalary;
-        double amountAhvIvEo = grossSalary * constants.getAhvIvEo();
-        double amountAlv = grossSalary * constants.getAlv();
-        double amountNbu = grossSalary * constants.getNbu();
-        double amountQuellensteuer = grossSalary * constants.getQuellensteuer();
-        double totalSocialReductions = amountAhvIvEo + amountAlv + amountNbu;
-        double netSalary = grossSalary - totalSocialReductions - amountQuellensteuer;
-        double totalReductions = totalSocialReductions + amountQuellensteuer;
+        var withNbu = Boolean.TRUE.equals(user.isNbuRequired());
+        var withQuellensteuer = Boolean.TRUE.equals(user.isQuellensteuerRequired());
+
+        var grossSalary = hoursWorked * hourlyWage;
+        var hourlyWageExcludingHolidayExpense = hourlyWage - (hourlyWage * constants.getHolidayExpense());
+        var wageForHoursWorked = hourlyWageExcludingHolidayExpense * hoursWorked;
+        var amountHolidayExpense = constants.getHolidayExpense() * grossSalary;
+        var amountAhvIvEo = grossSalary * constants.getAhvIvEo();
+        var amountAlv = grossSalary * constants.getAlv();
+        var amountNbu = withNbu ? grossSalary * constants.getNbu() : 0.0d;
+        var amountQuellensteuer = withQuellensteuer ? grossSalary * constants.getQuellensteuer() : 0.0d;
+        var totalSocialReductions = amountAhvIvEo + amountAlv + amountNbu;
+        var netSalary = grossSalary - totalSocialReductions - amountQuellensteuer;
+        var totalReductions = totalSocialReductions + amountQuellensteuer;
 
         var hoursWorkedByDay = timelogEntries.stream()
-                .collect(
-                        Collectors.toMap(
-                                TimelogEntity::getDate,
-                                it -> durationToHours(Duration.between(it.getStartTime(), it.getEndTime()))));
+                .collect(Collectors.toMap(TimelogEntity::getDate,
+                        it -> durationToHours(Duration.between(it.getStartTime(), it.getEndTime()))));
 
-        return new MonthlySalaryReport.MonthlySalaryReportBuilder()
-                .numberOfHoursWorked(hoursWorked)
+        return new MonthlySalaryReport.MonthlySalaryReportBuilder().numberOfHoursWorked(hoursWorked)
                 .wageForHoursWorked(wageForHoursWorked)
                 .hourlyWageExcludingHolidayExpense(hourlyWageExcludingHolidayExpense)
+                .isNbu(withNbu)
+                .isQuellensteuer(Boolean.TRUE.equals(user.isQuellensteuerRequired()))
                 .amountHolidayExpense(amountHolidayExpense)
                 .amountAhvIvEo(amountAhvIvEo)
                 .amountAlv(amountAlv)
