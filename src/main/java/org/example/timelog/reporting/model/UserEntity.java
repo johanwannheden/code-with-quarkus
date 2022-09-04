@@ -2,6 +2,7 @@ package org.example.timelog.reporting.model;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -63,6 +64,11 @@ public class UserEntity {
     @Column(name = "email")
     @Email
     private String email;
+
+    @Schema(name = "quellensteuerRequired", example = "Quellensteuer true/false, or null if not applicable")
+    @Column(name = "quellensteuerRequired")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private Boolean quellensteuerRequired;
 
     public String getId() {
         return id;
@@ -142,6 +148,14 @@ public class UserEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean isQuellensteuerRequired() {
+        return quellensteuerRequired;
+    }
+
+    public void setQuellensteuerRequired(Boolean quellensteuerRequired) {
+        this.quellensteuerRequired = quellensteuerRequired;
     }
 
     public boolean isAdministrator() {
